@@ -6,4 +6,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bgpkit-parser = {git="https://github.com/bgpkit/bgpkit-parser.git", branch="main"}
+bgpkit-parser = {git="https://github.com/bgpkit/bgpkit-parser.git", branch="feature_extended_types"}
+bgp-models = {git="https://github.com/bgpkit/bgp-models.git", branch="feature_extend_types"}
+byteorder = "1"
+thiserror = "1"
+enum-primitive-derive = "0.2"
+num-traits = "0.1"

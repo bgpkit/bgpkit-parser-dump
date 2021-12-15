@@ -1,8 +1,12 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
+use crate::error::DumpError;
+
+mod mrt;
+mod table_dump;
+mod bgp;
+mod attributes;
+mod utils;
+mod error;
+
+pub trait MrtDump {
+    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError>;
 }
