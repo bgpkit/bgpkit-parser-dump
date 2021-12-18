@@ -1,9 +1,12 @@
+use std::io::Write;
+use bgp_models::bgp::Attribute;
 use bgp_models::mrt::{PeerIndexTable, RibAfiEntries, RibGenericEntries, TableDumpMessage, TableDumpV2Message, TableDumpV2Type};
 use bgp_models::network::{Afi, AsnLength, Safi};
 use byteorder::WriteBytesExt;
 use crate::{DumpError, MrtDump};
 use crate::utils::WriteUtils;
 use num_traits::FromPrimitive;
+use crate::attributes::MrtAttrDump;
 
 impl MrtDump for TableDumpMessage{
     fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
@@ -29,7 +32,6 @@ impl MrtDump for PeerIndexTable {
 
         // collector id as ip
         buffer.write_ip(&self.collector_bgp_id.into())?;
-        // BigEndian::write_u32(&mut buffer, ipv4_to_u32(&self.collector_bgp_id));
 
         // view name length
         buffer.write_16b(self.view_name_length)?;
@@ -39,16 +41,10 @@ impl MrtDump for PeerIndexTable {
 
         for i in 0..self.peers_map.len() {
             let peer = self.peers_map.get(&(i as u32)).unwrap();
-
-            let asn_len = match peer.peer_type & 2 {
-                2 => AsnLength::Bits32,
-                _ => AsnLength::Bits16,
-            };
-
             buffer.write_u8(peer.peer_type)?;
             buffer.write_ip(&peer.peer_bgp_id.into())?;
             buffer.write_ip(&peer.peer_address)?;
-            buffer.write_asn(peer.peer_asn)?;
+            buffer.write_asn(&peer.peer_asn)?;
         }
         Ok(buffer)
     }
@@ -92,25 +88,33 @@ impl MrtDump for RibAfiEntries {
         let mut buffer: Vec<u8> = vec![];
         buffer.write_32b(self.sequence_number)?;
 
-        todo!("write nlri prefix");
+        buffer.write_nlri(&self.prefix, add_path)?;
 
         buffer.write_16b(self.rib_entries.len() as u16)?;
 
-        for entry in self.rib_entries {
+        for entry in &self.rib_entries {
             buffer.write_16b(entry.peer_index)?;
             buffer.write_32b(entry.originated_time)?;
-            todo!("add attribute_length to all relevant structs");
-            todo!("add subtype (u16 or enum) to all relevant structs");
+            if add_path {
+                // todo: currently the parser does not use this path id, so we also do not write it out
+                buffer.write_32b(0)?;
+            }
+
+            let mut attr_buffer = vec![];
+            for attribute in &entry.attributes {
+                attr_buffer.extend(attribute.to_bytes(add_path, false, false, false)?);
+            }
+
+            buffer.write_16b(attr_buffer.len() as u16)?;
+            buffer.write_all(&attr_buffer)?;
+
         }
-
-        todo!("write entries");
-
-        todo!()
+        Ok(buffer)
     }
 }
 
 impl MrtDump for RibGenericEntries {
     fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
-        todo!()
+        todo!("parser has not supported yet, so haven't us.")
     }
 }

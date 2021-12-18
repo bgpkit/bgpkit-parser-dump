@@ -1,5 +1,4 @@
 use bgp_models::mrt::{CommonHeader, MrtMessage, MrtRecord};
-use byteorder::{BigEndian, ByteOrder};
 use num_traits::ToPrimitive;
 use crate::{DumpError, MrtDump};
 use crate::utils::WriteUtils;
@@ -21,15 +20,15 @@ impl MrtDump for CommonHeader {
 
         buffer.write_32b(self.timestamp)?;
 
-        buffer.write_16b(self.entry_type.to_u16().unwrap());
-        buffer.write_16b(self.entry_subtype);
+        buffer.write_16b(self.entry_type.to_u16().unwrap())?;
+        buffer.write_16b(self.entry_subtype)?;
 
 
         if let Some(mt) = self.microsecond_timestamp {
-            buffer.write_32b(self.length+4);
-            buffer.write_32b(mt);
+            buffer.write_32b(self.length+4)?;
+            buffer.write_32b(mt)?;
         } else {
-            buffer.write_32b(self.length);
+            buffer.write_32b(self.length)?;
         }
         Ok(buffer)
     }
@@ -55,7 +54,8 @@ mod tests {
 
     #[test]
     fn test_common_header() {
-        let header = CommonHeader{
+        // test MRT header
+        let header1 = CommonHeader{
             timestamp: 1,
             microsecond_timestamp: Some(100),
             entry_type: EntryType::BGP4MP_ET,
@@ -63,8 +63,13 @@ mod tests {
             length: 20
         };
 
-        let mut bytes = header.to_bytes(0).unwrap();
+        // turn it to raw bytes in MRT format
+        let bytes = header1.to_bytes(0).unwrap();
+
+        // parse it back to Rust structs
         let (b, header2) = parse_common_header(&mut bytes.as_slice()).unwrap();
-        assert_eq!(header, header2);
+
+        // test equality!
+        assert_eq!(header1, header2);
     }
 }
