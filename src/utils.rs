@@ -3,6 +3,7 @@ use bgp_models::network::{Asn, AsnLength, NetworkPrefix};
 use byteorder::{BigEndian, WriteBytesExt};
 use crate::DumpError;
 
+#[allow(unused)]
 pub fn ipv4_to_u32(ip: &Ipv4Addr) -> u32 {
     let o = ip.octets();
     ((o[0] as u32) <<24)+((o[1] as u32) <<16)+((o[2] as u32) <<8)+ o[3] as u32

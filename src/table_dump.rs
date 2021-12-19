@@ -1,7 +1,5 @@
 use std::io::Write;
-use bgp_models::bgp::Attribute;
 use bgp_models::mrt::{PeerIndexTable, RibAfiEntries, RibGenericEntries, TableDumpMessage, TableDumpV2Message, TableDumpV2Type};
-use bgp_models::network::{Afi, AsnLength, Safi};
 use byteorder::WriteBytesExt;
 use crate::{DumpError, MrtDump};
 use crate::utils::WriteUtils;
@@ -9,7 +7,7 @@ use num_traits::FromPrimitive;
 use crate::attributes::MrtAttrDump;
 
 impl MrtDump for TableDumpMessage{
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         todo!()
     }
 }
@@ -36,6 +34,8 @@ impl MrtDump for PeerIndexTable {
         // view name length
         buffer.write_16b(self.view_name_length)?;
 
+        buffer.write_all(&vec![0; self.view_name_length as usize])?;
+
         // peer count
         buffer.write_16b(self.peer_count)?;
 
@@ -53,30 +53,6 @@ impl MrtDump for PeerIndexTable {
 impl MrtDump for RibAfiEntries {
     fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
         let rib_type: TableDumpV2Type = TableDumpV2Type::from_u16(subtype).unwrap();
-        let afi: Afi;
-        let safi: Safi;
-        match rib_type {
-            TableDumpV2Type::RibIpv4Unicast | TableDumpV2Type::RibIpv4UnicastAddPath => {
-                afi = Afi::Ipv4;
-                safi = Safi::Unicast
-            }
-            TableDumpV2Type::RibIpv4Multicast | TableDumpV2Type::RibIpv4MulticastAddPath => {
-                afi = Afi::Ipv4;
-                safi = Safi::Multicast
-            }
-            TableDumpV2Type::RibIpv6Unicast | TableDumpV2Type::RibIpv6UnicastAddPath => {
-                afi = Afi::Ipv6;
-                safi = Safi::Unicast
-            }
-            TableDumpV2Type::RibIpv6Multicast | TableDumpV2Type::RibIpv6MulticastAddPath => {
-                afi = Afi::Ipv6;
-                safi = Safi::Multicast
-            }
-            _ => {
-                ()
-            }
-        };
-
         let add_path = match rib_type {
             TableDumpV2Type::RibIpv4UnicastAddPath | TableDumpV2Type::RibIpv4MulticastAddPath |
             TableDumpV2Type::RibIpv6UnicastAddPath | TableDumpV2Type::RibIpv6MulticastAddPath => {
@@ -114,7 +90,7 @@ impl MrtDump for RibAfiEntries {
 }
 
 impl MrtDump for RibGenericEntries {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         todo!("parser has not supported yet, so haven't us.")
     }
 }

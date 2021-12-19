@@ -1,7 +1,6 @@
 use std::io::Write;
 use bgp_models::bgp::{BgpKeepAliveMessage, BgpMessage, BgpMessageType, BgpNotificationMessage, BgpOpenMessage, BgpUpdateMessage};
 use bgp_models::mrt::{Bgp4Mp, Bgp4MpMessage, Bgp4MpStateChange, Bgp4MpType};
-use bgp_models::network::AsnLength;
 use byteorder::WriteBytesExt;
 use crate::{DumpError, MrtDump};
 use crate::utils::WriteUtils;
@@ -26,7 +25,7 @@ impl MrtDump for Bgp4Mp {
 }
 
 impl MrtDump for Bgp4MpStateChange {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
         buffer.write_asn(&self.peer_asn)?;
         buffer.write_asn(&self.local_asn)?;
@@ -41,7 +40,7 @@ impl MrtDump for Bgp4MpStateChange {
 }
 
 impl MrtDump for Bgp4MpMessage {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
         buffer.write_asn(&self.peer_asn)?;
         buffer.write_asn(&self.local_asn)?;
@@ -98,12 +97,13 @@ impl MrtDump for BgpMessage {
 
         // length, minimum 19
         buffer.write_16b(2+16+msg_bytes.len() as u16)?;
+        buffer.extend(msg_bytes);
         Ok(buffer)
     }
 }
 
 impl MrtDump for BgpOpenMessage {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
         buffer.write_u8(self.version)?;
         buffer.write_16b(self.asn.asn as u16)?;
@@ -144,7 +144,7 @@ impl MrtDump for BgpUpdateMessage {
     }
 }
 impl MrtDump for BgpNotificationMessage {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
         buffer.write_u8(self.error_code)?;
         buffer.write_u8(self.error_subcode)?;
@@ -154,7 +154,7 @@ impl MrtDump for BgpNotificationMessage {
 }
 
 impl MrtDump for BgpKeepAliveMessage {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         Ok(vec![])
     }
 }

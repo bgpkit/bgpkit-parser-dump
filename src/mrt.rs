@@ -4,7 +4,7 @@ use crate::{DumpError, MrtDump};
 use crate::utils::WriteUtils;
 
 impl MrtDump for MrtRecord {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
 
         buffer.extend(self.common_header.to_bytes(0)?);
@@ -15,7 +15,7 @@ impl MrtDump for MrtRecord {
 }
 
 impl MrtDump for CommonHeader {
-    fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
 
         buffer.write_32b(self.timestamp)?;

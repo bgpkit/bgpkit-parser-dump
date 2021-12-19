@@ -5,7 +5,7 @@ use bgp_models::network::{AsnLength, NextHopAddress};
 use bgp_models::prelude::AttributeValue;
 use byteorder::WriteBytesExt;
 use num_traits::ToPrimitive;
-use crate::{DumpError, MrtDump};
+use crate::DumpError;
 use crate::utils::WriteUtils;
 
 pub trait MrtAttrDump {
@@ -150,7 +150,7 @@ impl MrtAttrDump for Attribute {
             }
             AttributeValue::Clusters(v) => {
                 for ip in v {
-                    attr_buf.write_ip(ip);
+                    attr_buf.write_ip(ip)?;
                 }
             }
             AttributeValue::MpReachNlri(v) => {
