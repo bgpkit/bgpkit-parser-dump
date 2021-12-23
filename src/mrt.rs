@@ -7,15 +7,16 @@ impl MrtDump for MrtRecord {
     fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
 
-        buffer.extend(self.common_header.to_bytes(0)?);
-        buffer.extend(self.message.to_bytes(self.common_header.entry_subtype)?);
+        let bytes = self.message.to_bytes(self.common_header.entry_subtype)?;
+        buffer.extend(self.common_header.to_bytes(bytes.len() as u16)?);
+        buffer.extend(bytes.as_slice());
 
         Ok(buffer)
     }
 }
 
 impl MrtDump for CommonHeader {
-    fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
+    fn to_bytes(&self, size: u16) -> Result<Vec<u8>, DumpError> {
         let mut buffer: Vec<u8> = vec![];
 
         buffer.write_32b(self.timestamp)?;
@@ -25,10 +26,10 @@ impl MrtDump for CommonHeader {
 
 
         if let Some(mt) = self.microsecond_timestamp {
-            buffer.write_32b(self.length+4)?;
+            buffer.write_32b((size + 4) as u32)?;
             buffer.write_32b(mt)?;
         } else {
-            buffer.write_32b(self.length)?;
+            buffer.write_32b(size as u32)?;
         }
         Ok(buffer)
     }
