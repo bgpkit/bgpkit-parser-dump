@@ -6,7 +6,7 @@ use bgp_models::prelude::AttributeValue;
 use byteorder::WriteBytesExt;
 use num_traits::ToPrimitive;
 use crate::DumpError;
-use crate::utils::WriteUtils;
+use crate::mrt_dump::utils::WriteUtils;
 
 pub trait MrtAttrDump {
     fn to_bytes(&self, add_path: bool, write_afi: bool, write_safi: bool, write_prefixes: bool)-> Result<Vec<u8>, DumpError>;

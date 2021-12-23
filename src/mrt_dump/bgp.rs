@@ -3,9 +3,9 @@ use bgp_models::bgp::{BgpKeepAliveMessage, BgpMessage, BgpMessageType, BgpNotifi
 use bgp_models::mrt::{Bgp4Mp, Bgp4MpMessage, Bgp4MpStateChange, Bgp4MpType};
 use byteorder::WriteBytesExt;
 use crate::{DumpError, MrtDump};
-use crate::utils::WriteUtils;
+use crate::mrt_dump::utils::WriteUtils;
 use num_traits::ToPrimitive;
-use crate::attributes::MrtAttrDump;
+use crate::mrt_dump::attributes::MrtAttrDump;
 
 impl MrtDump for Bgp4Mp {
     fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {
