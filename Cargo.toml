@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 bgpkit-parser = {git="https://github.com/bgpkit/bgpkit-parser.git", branch="main"}
-bgp-models = "0.7.0-alpha.2"
+bgp-models = "0.7.0-alpha.4"
 # bgp-models = {git="https://github.com/bgpkit/bgp-models.git", branch="feature_extend_types"}
 byteorder = "1"
 thiserror = "1"
