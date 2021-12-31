@@ -64,7 +64,7 @@ impl MrtAttrDump for Attribute {
                 attr_buf.write_32b(*v)?;
             }
             AttributeValue::AtomicAggregate(_v) => {
-                // do nothing here. the value type is enough.
+                // do nothing here. the value type is enough and it's already written above.
             }
             AttributeValue::Aggregator(asn, ip) => {
                 attr_buf.write_asn(asn)?;

@@ -105,13 +105,8 @@ fn elem_to_attributes(elem: &BgpElem) -> Vec<Attribute> {
     if let Some(atomic) = &elem.atomic {
         match atomic {
             AtomicAggregate::NAG => {
-                attrs.push(
-                    Attribute {
-                        attr_type: AttrType::ATOMIC_AGGREGATE,
-                        value: AttributeValue::AtomicAggregate(AtomicAggregate::NAG),
-                        flag: 64, // transitive
-                    }
-                );
+                // Non-Atomic-Aggregate does not show up as an attribute;
+                // i.e. the lack of AttrType::ATOMIC_AGGREGATE means NAG.
             }
             AtomicAggregate::AG => {
                 attrs.push(
@@ -187,6 +182,11 @@ impl MrtCompose for BgpUpdatesComposer {
             false => Afi::Ipv6,
         };
 
+        let local_ip = match elem.peer_ip.is_ipv4(){
+            true => IpAddr::from([0,0,0,0]),
+            false => IpAddr::from([ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 ])
+        };
+
         self.mrt_messages.push (
             MrtRecord{
                 common_header: header,
@@ -199,7 +199,7 @@ impl MrtCompose for BgpUpdatesComposer {
                             interface_index: 0,
                             afi,
                             peer_ip: elem.peer_ip,
-                            local_ip: IpAddr::from([0,0,0,0]),
+                            local_ip,
                             bgp_message: BgpMessage::Update(msg)
                         }
                     )
