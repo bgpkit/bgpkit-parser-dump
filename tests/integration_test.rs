@@ -5,7 +5,7 @@ use bgpkit_parser::BgpkitParser;
 use bgpkit_parser::parser::mrt::mrt_record::parse_mrt_record;
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use bgpkit_parser_dump::{BgpUpdatesComposer, MrtCompose, MrtDump};
+use bgpkit_parser_dump::{BgpUpdatesComposer, MrtCompose, MrtDump, TableDumpComposer};
 
 #[test]
 fn test_updates() {
@@ -50,4 +50,26 @@ fn test_filtered_updates() {
     let elem_count = parser.into_elem_iter().count();
     assert_eq!(elem_count, 118);
     // 43766
+}
+
+#[test]
+fn test_filtered_rib() {
+    let url = "https://spaces.bgpkit.org/parser/rib-example.bz2";
+    let parser = BgpkitParser::new(url).unwrap().add_filter("origin_asn", "15169").unwrap();
+    let elems = parser.into_elem_iter().collect::<Vec<BgpElem>>();
+
+    let mut composer = TableDumpComposer::new();
+    for elem in &elems {
+        composer.add_elem(elem).unwrap();
+    }
+
+    let bytes = composer.export_bytes().unwrap();
+    let mut e = GzEncoder::new(File::create("/tmp/test-filtered-rib.gz").unwrap(), Compression::default());
+    e.write_all(bytes.as_slice()).unwrap();
+    e.finish().unwrap();
+
+
+    let parser = BgpkitParser::new("/tmp/test-filtered-rib.gz").unwrap();
+    let elem_count = parser.into_elem_iter().count();
+    assert_eq!(elem_count, 2507);
 }
