@@ -6,8 +6,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bgpkit-parser = {git="https://github.com/bgpkit/bgpkit-parser.git", branch="main"}
-bgp-models = "0.7.0-alpha.4"
+bgpkit-parser = "0.7.0"
+# bgpkit-parser = {git="https://github.com/bgpkit/bgpkit-parser.git", branch="main"}
+bgp-models = "0.7.0"
 # bgp-models = {git="https://github.com/bgpkit/bgp-models.git", branch="feature_extend_types"}
 byteorder = "1"
 thiserror = "1"
