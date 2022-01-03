@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::net::Ipv4Addr;
 use num_traits::ToPrimitive;
 use bgp_models::prelude::*;
@@ -8,14 +8,14 @@ use crate::{elem_to_attributes, MrtCompose, MrtDump};
 
 pub struct TableDumpComposer {
     mrt_records: Option<Vec<MrtRecord>>,
-    rib_entries: HashMap<IpNetwork, Vec<RibEntry>>,
-    peers: HashMap<String, (usize, Peer)>,
+    rib_entries: BTreeMap<IpNetwork, Vec<RibEntry>>,
+    peers: BTreeMap<String, (usize, Peer)>,
     ts_sec: u32,
 }
 
 impl TableDumpComposer {
     pub fn new() -> Self {
-        TableDumpComposer{ mrt_records: None , rib_entries: HashMap::new(), peers: HashMap::new(), ts_sec: 0 }
+        TableDumpComposer{ mrt_records: None , rib_entries: BTreeMap::new(), peers: BTreeMap::new(), ts_sec: 0 }
     }
 }
 
