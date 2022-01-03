@@ -1,15 +1,17 @@
+use bgp_models::prelude::*;
+
+pub use rib_composer::TableDumpComposer;
+pub use updates_composer::BgpUpdatesComposer;
+
+use crate::mrt_compose::error::ComposeError;
+
 mod updates_composer;
 mod rib_composer;
 mod error;
 
-use bgp_models::prelude::*;
-
-pub use updates_composer::BgpUpdatesComposer;
-pub use rib_composer::TableDumpComposer;
-use crate::mrt_compose::error::ComposeError;
-
 pub trait MrtCompose {
     fn add_elem(&mut self, elem: &BgpElem) -> Result<(), ComposeError>;
+    fn add_elems(&mut self, elems: &Vec<BgpElem>) -> Result<(), ComposeError>;
     fn export_bytes(&mut self) -> Result<Vec<u8>, ComposeError>;
 }
 

@@ -1,4 +1,5 @@
 use thiserror::Error;
+
 use crate::DumpError;
 
 #[derive(Error, Debug)]

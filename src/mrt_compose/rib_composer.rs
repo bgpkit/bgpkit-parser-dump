@@ -1,10 +1,12 @@
 use std::collections::{BTreeMap, HashMap};
 use std::net::Ipv4Addr;
-use num_traits::ToPrimitive;
+
 use bgp_models::prelude::*;
 use ipnetwork::IpNetwork;
-use crate::mrt_compose::error::ComposeError;
+use num_traits::ToPrimitive;
+
 use crate::{elem_to_attributes, MrtCompose, MrtDump};
+use crate::mrt_compose::error::ComposeError;
 
 pub struct TableDumpComposer {
     mrt_records: Option<Vec<MrtRecord>>,
@@ -68,6 +70,13 @@ impl MrtCompose for TableDumpComposer {
             }
         );
 
+        Ok(())
+    }
+
+    fn add_elems(&mut self, elems: &Vec<BgpElem>) -> Result<(), ComposeError> {
+        for elem in elems {
+            self.add_elem(elem)?;
+        }
         Ok(())
     }
 
@@ -163,11 +172,11 @@ impl MrtCompose for TableDumpComposer {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Take;
     use std::net::{IpAddr, Ipv4Addr};
     use std::str::FromStr;
+
     use bgpkit_parser::parse_mrt_record;
-    use bgpkit_parser::parser::utils::DataBytes;
+
     use super::*;
 
     #[test]
@@ -213,10 +222,10 @@ mod tests {
         };
 
         let mut composer = TableDumpComposer::new();
-        composer.add_elem(&elem);
-        composer.add_elem(&elem2);
+        composer.add_elem(&elem).unwrap();
+        composer.add_elem(&elem2).unwrap();
 
-        let mut bytes = composer.export_bytes().unwrap();
+        let bytes = composer.export_bytes().unwrap();
 
         let record = parse_mrt_record(&mut bytes.as_slice()).unwrap();
 

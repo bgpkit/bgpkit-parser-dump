@@ -1,9 +1,11 @@
 use std::net::IpAddr;
 use std::str::FromStr;
-use num_traits::ToPrimitive;
+
 use bgp_models::prelude::*;
-use crate::mrt_compose::error::ComposeError;
+use num_traits::ToPrimitive;
+
 use crate::{elem_to_attributes, MrtCompose, MrtDump};
+use crate::mrt_compose::error::ComposeError;
 
 pub struct BgpUpdatesComposer {
     mrt_records: Vec<MrtRecord>,
@@ -75,6 +77,13 @@ impl MrtCompose for BgpUpdatesComposer {
         Ok(())
     }
 
+    fn add_elems(&mut self, elems: &Vec<BgpElem>) -> Result<(), ComposeError> {
+        for elem in elems {
+            self.add_elem(elem)?;
+        }
+        Ok(())
+    }
+
     fn export_bytes(&mut self) -> Result<Vec<u8>, ComposeError> {
         let mut buffer = vec![];
         for msg in &self.mrt_records {
@@ -87,11 +96,11 @@ impl MrtCompose for BgpUpdatesComposer {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Take;
     use std::net::Ipv4Addr;
     use std::str::FromStr;
+
     use bgpkit_parser::parse_mrt_record;
-    use bgpkit_parser::parser::utils::DataBytes;
+
     use super::*;
 
     #[test]
@@ -118,11 +127,11 @@ mod tests {
         };
 
         let mut composer = BgpUpdatesComposer::new();
-        composer.add_elem(&elem);
+        composer.add_elem(&elem).unwrap();
 
         dbg!(&composer.mrt_records);
 
-        let mut bytes = composer.export_bytes().unwrap();
+        let bytes = composer.export_bytes().unwrap();
 
         let record = parse_mrt_record(&mut bytes.as_slice()).unwrap();
 

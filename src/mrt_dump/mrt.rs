@@ -1,5 +1,6 @@
 use bgp_models::mrt::{CommonHeader, MrtMessage, MrtRecord};
 use num_traits::ToPrimitive;
+
 use crate::{DumpError, MrtDump};
 use crate::mrt_dump::utils::WriteUtils;
 
@@ -49,9 +50,10 @@ impl MrtDump for MrtMessage {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use bgp_models::prelude::*;
     use bgpkit_parser::parser::mrt::mrt_record::parse_common_header;
+
+    use super::*;
 
     #[test]
     fn test_common_header() {

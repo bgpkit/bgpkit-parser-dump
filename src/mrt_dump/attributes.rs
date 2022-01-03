@@ -1,10 +1,12 @@
 use std::io::Write;
 use std::net::IpAddr;
+
 use bgp_models::bgp::{AsPathSegment, Attribute, AttributeFlagsBit, Community, ExtendedCommunity};
 use bgp_models::network::{AsnLength, NextHopAddress};
 use bgp_models::prelude::AttributeValue;
 use byteorder::WriteBytesExt;
 use num_traits::ToPrimitive;
+
 use crate::DumpError;
 use crate::mrt_dump::utils::WriteUtils;
 

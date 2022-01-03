@@ -1,10 +1,12 @@
 use std::io::Write;
+
 use bgp_models::mrt::{PeerIndexTable, RibAfiEntries, RibGenericEntries, TableDumpMessage, TableDumpV2Message, TableDumpV2Type};
 use byteorder::WriteBytesExt;
-use crate::{DumpError, MrtDump};
-use crate::mrt_dump::utils::WriteUtils;
 use num_traits::FromPrimitive;
+
+use crate::{DumpError, MrtDump};
 use crate::mrt_dump::attributes::MrtAttrDump;
+use crate::mrt_dump::utils::WriteUtils;
 
 impl MrtDump for TableDumpMessage{
     fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {

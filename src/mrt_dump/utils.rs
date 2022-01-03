@@ -1,6 +1,8 @@
 use std::net::{IpAddr, Ipv4Addr};
+
 use bgp_models::network::{Asn, AsnLength, NetworkPrefix};
 use byteorder::{BigEndian, WriteBytesExt};
+
 use crate::DumpError;
 
 #[allow(unused)]
@@ -74,10 +76,8 @@ impl<W: std::io::Write> WriteUtils for W {}
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
-    use bgp_models::prelude::Afi;
-    use ipnetwork::IpNetwork;
+
     use super::*;
-    use bgpkit_parser::parser::utils::ReadUtils;
 
     #[test]
     fn test_ip_to_u32() {
