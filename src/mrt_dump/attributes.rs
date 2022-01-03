@@ -1,12 +1,14 @@
 use std::io::Write;
 use std::net::IpAddr;
+
 use bgp_models::bgp::{AsPathSegment, Attribute, AttributeFlagsBit, Community, ExtendedCommunity};
 use bgp_models::network::{AsnLength, NextHopAddress};
 use bgp_models::prelude::AttributeValue;
 use byteorder::WriteBytesExt;
 use num_traits::ToPrimitive;
+
 use crate::DumpError;
-use crate::utils::WriteUtils;
+use crate::mrt_dump::utils::WriteUtils;
 
 pub trait MrtAttrDump {
     fn to_bytes(&self, add_path: bool, write_afi: bool, write_safi: bool, write_prefixes: bool)-> Result<Vec<u8>, DumpError>;
@@ -64,7 +66,7 @@ impl MrtAttrDump for Attribute {
                 attr_buf.write_32b(*v)?;
             }
             AttributeValue::AtomicAggregate(_v) => {
-                // do nothing here. the value type is enough.
+                // do nothing here. the value type is enough and it's already written above.
             }
             AttributeValue::Aggregator(asn, ip) => {
                 attr_buf.write_asn(asn)?;

@@ -1,11 +1,13 @@
 use std::io::Write;
+
 use bgp_models::bgp::{BgpKeepAliveMessage, BgpMessage, BgpMessageType, BgpNotificationMessage, BgpOpenMessage, BgpUpdateMessage};
 use bgp_models::mrt::{Bgp4Mp, Bgp4MpMessage, Bgp4MpStateChange, Bgp4MpType};
 use byteorder::WriteBytesExt;
-use crate::{DumpError, MrtDump};
-use crate::utils::WriteUtils;
 use num_traits::ToPrimitive;
-use crate::attributes::MrtAttrDump;
+
+use crate::{DumpError, MrtDump};
+use crate::mrt_dump::attributes::MrtAttrDump;
+use crate::mrt_dump::utils::WriteUtils;
 
 impl MrtDump for Bgp4Mp {
     fn to_bytes(&self, subtype: u16) -> Result<Vec<u8>, DumpError> {

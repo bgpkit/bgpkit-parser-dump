@@ -1,7 +1,8 @@
 use bgp_models::mrt::{CommonHeader, MrtMessage, MrtRecord};
 use num_traits::ToPrimitive;
+
 use crate::{DumpError, MrtDump};
-use crate::utils::WriteUtils;
+use crate::mrt_dump::utils::WriteUtils;
 
 impl MrtDump for MrtRecord {
     fn to_bytes(&self, _subtype: u16) -> Result<Vec<u8>, DumpError> {
@@ -49,9 +50,10 @@ impl MrtDump for MrtMessage {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use bgp_models::prelude::*;
     use bgpkit_parser::parser::mrt::mrt_record::parse_common_header;
+
+    use super::*;
 
     #[test]
     fn test_common_header() {
@@ -65,10 +67,10 @@ mod tests {
         };
 
         // turn it to raw bytes in MRT format
-        let bytes = header1.to_bytes(0).unwrap();
+        let bytes = header1.to_bytes(20).unwrap();
 
         // parse it back to Rust structs
-        let (b, header2) = parse_common_header(&mut bytes.as_slice()).unwrap();
+        let (_bytes, header2) = parse_common_header(&mut bytes.as_slice()).unwrap();
 
         // test equality!
         assert_eq!(header1, header2);
